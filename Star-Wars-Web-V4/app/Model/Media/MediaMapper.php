@@ -11,6 +11,7 @@ class MediaMapper
         return new MediaDTO(
             $row->id,
             $row->title,
+            $row->description,
             CanonStatus::from($row['canon_status']),
             MediaType::from($row['media_type']),
             $row->start_year,
@@ -19,6 +20,7 @@ class MediaMapper
             $row->part_label,
             $row->timeline_order,
             $row->release_date,
+            $row->image_url,
             MediaStatus::from($row['status']),
         );
     }

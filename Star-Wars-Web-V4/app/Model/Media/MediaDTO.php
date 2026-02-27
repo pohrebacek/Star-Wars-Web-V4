@@ -7,6 +7,7 @@ readonly class MediaDTO
     function __construct(
         public int $id,
         public string $title,
+        public string $description,
         public CanonStatus $canonStatus,
         public MediaType $mediaType,
         public int $startYear,
@@ -15,6 +16,7 @@ readonly class MediaDTO
         public string $partLabel,
         public string $timelineOrder,
         public DateTime $releaseDate,
+        public string $imageUrl,
         public MediaStatus $status,
     ) {}
 }

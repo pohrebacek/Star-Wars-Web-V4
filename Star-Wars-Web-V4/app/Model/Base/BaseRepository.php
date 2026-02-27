@@ -27,6 +27,11 @@ class BaseRepository
         return null;
     }
 
+    public function getAll(): array
+    {
+        return $this->database->table($this->tableName)->fetchAll();
+    }
+
     public function deleteRow(int $id): int|null
     {
         $row = $this->getRowById($id);

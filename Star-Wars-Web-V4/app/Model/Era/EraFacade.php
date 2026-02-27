@@ -14,4 +14,14 @@ final class EraFacade
         $eraRow = $this->erasRepository->getRowById($id);
         return $this->eraMapper->map($eraRow);
     }
+
+    public function getAllEras(): array
+    {
+        $erasRows = $this->erasRepository->getAll();
+        $eras = array();
+        foreach ($erasRows as $eraRow) {
+            $eras[] = $eraRow->era_name;
+        }
+        return $eras;
+    }
 }
