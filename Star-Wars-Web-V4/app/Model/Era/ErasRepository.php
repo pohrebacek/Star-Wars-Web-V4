@@ -11,4 +11,10 @@ final class ErasRepository extends BaseRepository
     ) {
         $this->tableName = "eras";
     }
+
+    public function getEraIdByName(string $era): ?int
+    {
+        $row = $this->database->table($this->tableName)->where("era_name", $era)->fetch();
+        return $row ? (int)$row->era_id : null;
+    }
 }

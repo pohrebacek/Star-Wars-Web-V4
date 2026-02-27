@@ -7,6 +7,7 @@ use App\Model\Media\MediaType;
 use App\Model\Media\MediaRepository;
 use App\Model\Media\MediaStatus;
 use App\Model\Era\EraFacade;
+use App\Model\Era\ErasRepository;
 use App\Presentation\Base\BasePresenter;
 use Nette;
 use Nette\Application\UI\Form;
@@ -15,8 +16,9 @@ use Nette\Utils\ArrayHash;
 final class MediaPresenter extends BasePresenter
 {
     public function __construct(
-      private EraFacade $eraFacade,
+        private EraFacade $eraFacade,
         private MediaRepository $mediaRepository,
+        private ErasRepository $erasRepository,
     ) {}
 
     public function renderAdd():void
@@ -52,7 +54,7 @@ final class MediaPresenter extends BasePresenter
         $form->addInteger('end_year', 'Zadej v jakém SW roce dílo končí (BBY => záporné číslo, ABY => kladné číslo')
             ->setRequired('Zadej konečný rok díla')
             ->setHtmlAttribute('class', 'form-control');
-        $form->addSelect('era_id', 'Vyber éru, do které dílo spadá: ', $this->eraFacade->getAllEras())
+        $form->addSelect('eraName', 'Vyber éru, do které dílo spadá: ', $this->eraFacade->getAllEras())
             ->setRequired('Vyber éru díla')
             ->setHtmlAttribute('class', 'form-control');
         $form->addText('part_label', 'Zadej část díla (nepovinné): ')
@@ -71,7 +73,7 @@ final class MediaPresenter extends BasePresenter
         return $form;
     }
 
-    public function getImageFromForm(): ?string
+    private function getImageFromUrlForm(): ?string
     {
         if(isset($_FILES["image_url"]) && $_FILES["image_url"]["error"] == UPLOAD_ERR_OK){
             $tempPath = $_FILES["image_url"]["tmp_name"];
@@ -95,7 +97,7 @@ final class MediaPresenter extends BasePresenter
             $formData = $form->getValues();
             bdump($formData);
 
-            //uživatl bude mít na výběr vybrat dílo po kterym se to new odehrává a dílo před kterym se odehrává, musí vybrat aspoň jedno, pokud by výběr nesouhlasil s rokem díla v sw timeline tak to usera upozorní
+            //uživatl bude mít na výběr vybrat dílo po kterym se to new odehrává a dílo před kterym se odehrává, musí vybrat aspoň jedno, pokud by výběr nesouhlasil s timeline_order díla v sw timeline tak to usera upozorní
 
             $data = ArrayHash::from([
                 'title' => $formData['title'],
@@ -104,11 +106,11 @@ final class MediaPresenter extends BasePresenter
                 'media_type' => $formData['media_type'],
                 'start_year' => $formData['start_year'],
                 'end_year' => $formData['end_year'],
-                //'era_id' => $formData['era_id'],    //TODO
+                'era_id' => $this->erasRepository->getEraIdByName($formData['eraName']),
                 'part_label' => $formData['part_label'],
                 //'timeline_order' => $formData['timeline_order'], //TODO
                 'release_date' => $formData['release_date'],
-                ///'image_url' => $formData['image_url'],  //TODO
+                'image_url' => $this->getImageFromUrlForm(),
                 'status' => MediaStatus::PLANNED->value
             ]);
 
