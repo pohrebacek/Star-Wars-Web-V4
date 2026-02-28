@@ -1,2 +1,32 @@
 {block content}
-<a n:href="Media:add" class="btn btn-light">Add media</a>
+<div>
+    <a n:href="Media:add" class="btn btn-light">Add media</a>
+</div>
+
+<div n:foreach="$mediaDTOs as $mediaDTO" class="container2">
+    <div class="container">
+        <div class="imageAYear">
+            <img src="{$mediaDTO->imageUrl}" class="image">
+            <div>
+                {if $mediaDTO->endYear == $mediaDTO->startYear}
+                    <p class="Year">{$mediaDTO->startYear}</p>
+                {else}
+                    <p class="Year">{$mediaDTO->startYear} - {$mediaDTO->endYear}</p>
+                {/if}
+                <p class="Status">{$mediaDTO->canonStatus->value}</p>
+            </div>
+
+        </div>
+
+        <div class="nadpisAText">
+            <h1>{$mediaDTO->title}</h1>
+            <div class="line"></div>
+            <p>{$mediaDTO->description}</p>
+            <div class="line2"></div>
+            <div class="stav">
+
+            </div>
+
+        </div>
+    </div>
+</div>

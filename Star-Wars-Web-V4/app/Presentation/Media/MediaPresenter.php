@@ -6,6 +6,7 @@ use App\Model\Media\CanonStatus;
 use App\Model\Media\MediaType;
 use App\Model\Media\MediaRepository;
 use App\Model\Media\MediaStatus;
+use App\Model\Media\MediaFacade;
 use App\Model\Era\EraFacade;
 use App\Model\Era\ErasRepository;
 use App\Presentation\Base\BasePresenter;
@@ -19,6 +20,7 @@ final class MediaPresenter extends BasePresenter
         private EraFacade $eraFacade,
         private MediaRepository $mediaRepository,
         private ErasRepository $erasRepository,
+        private MediaFacade $mediaFacade,
     ) {}
 
     public function renderAdd():void
@@ -54,7 +56,10 @@ final class MediaPresenter extends BasePresenter
         $form->addInteger('end_year', 'Zadej v jakém SW roce dílo končí (BBY => záporné číslo, ABY => kladné číslo')
             ->setRequired('Zadej konečný rok díla')
             ->setHtmlAttribute('class', 'form-control');
-        $form->addSelect('eraName', 'Vyber éru, do které dílo spadá: ', $this->eraFacade->getAllEras())
+        $form->addSelect('media_id', 'Vyber po kterém díle se tvé dílo odehrává', (array) $this->mediaFacade->getAllMediaDTOsForForm() )
+            ->setPrompt('--- Přidat na začátek ---')
+            ->setHtmlAttribute('class', 'form-control');
+        $form->addSelect('era_id', 'Vyber éru, do které dílo spadá: ', (array) $this->eraFacade->getAllErasForForm())
             ->setRequired('Vyber éru díla')
             ->setHtmlAttribute('class', 'form-control');
         $form->addText('part_label', 'Zadej část díla (nepovinné): ')
@@ -68,6 +73,8 @@ final class MediaPresenter extends BasePresenter
                 $mimeType = mime_content_type($item->getValue()->getTemporaryFile());
                 return in_array($mimeType, ['image/jpeg', 'image/png', 'image/gif']);
             }, 'Soubor musí být platný obrázek (JPG/PNG/GIF).');
+        $form->addSubmit('send', 'Přidat dílo')
+            ->setAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = [$this, 'addFormSucceeded'];
         return $form;
@@ -97,7 +104,11 @@ final class MediaPresenter extends BasePresenter
             $formData = $form->getValues();
             bdump($formData);
 
-            //uživatl bude mít na výběr vybrat dílo po kterym se to new odehrává a dílo před kterym se odehrává, musí vybrat aspoň jedno, pokud by výběr nesouhlasil s timeline_order díla v sw timeline tak to usera upozorní
+            /*user si bude moct jen vybrat dílo PO KTERÉM se to nové odehrává, program sám dopočíta timline_order
+            (pokud po tom díle něco je tak se tomu novému přidá timeline order jako průměr těch dvou,
+            pokud po něm nic neni tak se timelien_order přiřadí jako prostě vyšší hodnota,
+            a pokud user nic nezadá tak se nové dílo dá na začátek) tím by se mělo předejít zmatku a chaosu jak v kodu tak v ui
+            */
 
             $data = ArrayHash::from([
                 'title' => $formData['title'],
@@ -106,13 +117,14 @@ final class MediaPresenter extends BasePresenter
                 'media_type' => $formData['media_type'],
                 'start_year' => $formData['start_year'],
                 'end_year' => $formData['end_year'],
-                'era_id' => $this->erasRepository->getEraIdByName($formData['eraName']),
+                'era_id' => $formData['era_id'],
                 'part_label' => $formData['part_label'],
-                //'timeline_order' => $formData['timeline_order'], //TODO
+                'timeline_order' => $this->mediaFacade->calculateTimelineOrder($formData['media_id']),
                 'release_date' => $formData['release_date'],
                 'image_url' => $this->getImageFromUrlForm(),
                 'status' => MediaStatus::PLANNED->value
             ]);
+            bdump($data);
 
             $media = $this->mediaRepository->saveRow((array) $data, null);
             if ($media) {

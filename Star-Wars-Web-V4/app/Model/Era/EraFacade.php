@@ -2,6 +2,8 @@
 
 namespace App\Model\Era;
 
+use Nette\Utils\ArrayHash;
+
 final class EraFacade
 {
     public function __construct(
@@ -22,6 +24,17 @@ final class EraFacade
         foreach ($erasRows as $eraRow) {
             $eras[] = $eraRow->era_name;
         }
+        bdump($eras);
         return $eras;
+    }
+
+    public function getAllErasForForm(): ArrayHash
+    {
+        $data = new ArrayHash();
+        $eras = $this->erasRepository->getAll();
+        foreach ($eras as $era) {
+            $data[$era->id] = $era->era_name;
+        }
+        return $data;
     }
 }

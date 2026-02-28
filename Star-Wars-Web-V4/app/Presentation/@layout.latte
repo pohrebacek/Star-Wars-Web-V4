@@ -15,9 +15,12 @@
 </head>
 
 <body>
-	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+	<div class=main>
+		<div n:foreach="$flashes as $flash" n:class="alert, 'alert-' . $flash->type">{$flash->message}</div>
 
-	{include content}
+		{include content}
+	</div>
+
 
 	{block scripts}
 	<script src="https://unpkg.com/nette-forms@3"></script>
