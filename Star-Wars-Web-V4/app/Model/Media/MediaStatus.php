@@ -9,5 +9,5 @@ enum MediaStatus: string
     case COMPLETED = "completed";
     case ON_HOLD = "on_hold";
     case DROPPED = "dropped";
-    case REVISITING = "revising";
+    case REVISITING = "revisiting";
 }
