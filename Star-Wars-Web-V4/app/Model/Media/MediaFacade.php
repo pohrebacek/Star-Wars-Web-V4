@@ -61,9 +61,10 @@ final class MediaFacade
             $sum = bcadd($current->timeline_order, $next->timeline_order, 10);
             return bcdiv($sum, "2", 10);
         } else {
-            $mediaDTO = $this->mediaMapper->map($this->mediaRepository->getFirstByTimelineOrder());
-            if ($mediaDTO) {
-                bdump('$mediaDTO');
+            $mediaRow = $this->mediaRepository->getFirstByTimelineOrder();
+            if ($mediaRow) {
+                bdump('$mediaRow');
+                $mediaDTO = $this->mediaMapper->map($mediaRow);
                 return bcsub($mediaDTO->timelineOrder, '1', 10);
             }
             bdump(':(');

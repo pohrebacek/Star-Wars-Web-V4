@@ -92,7 +92,7 @@ final class MediaPresenter extends BasePresenter
                 move_uploaded_file($tempPath, $targetFile);
                 bdump($tempPath);
             }
-            return "http://www.localhost:8000/images/" . basename($_FILES['image']['name']);
+            return "http://www.localhost:8000/images/" . basename($_FILES['image_url']['name']);
         } else {
             return null;
         }
