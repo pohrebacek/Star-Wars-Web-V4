@@ -14,6 +14,8 @@
                     <p class="Year">{$mediaDTO->startYear} - {$mediaDTO->endYear}</p>
                 {/if}
                 <p class="Status">{$mediaDTO->canonStatus->value}</p>
+                <a n:href="Media:add" class="btn btn-light">Edit media</a>
+                <a n:href="Media:add" class="btn btn-light">Delete media</a>
             </div>
 
         </div>
@@ -26,7 +28,6 @@
             <div class="stav">
 
             </div>
-
         </div>
     </div>
 </div>
