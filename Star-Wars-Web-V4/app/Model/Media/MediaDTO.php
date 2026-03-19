@@ -29,4 +29,14 @@ readonly class MediaDTO
         }
         return $this->title;
     }
+
+    public function getFormattedYear(): string
+    {
+        if ($this->startYear == $this->endYear) {
+            return $this->startYear < 0 ? abs($this->startYear) . ' BBY' : $this->startYear . ' ABY';
+        }
+        return
+            ($this->startYear < 0 ? abs($this->startYear) . ' BBY - ' : $this->startYear . ' ABY - ')
+            . ($this->endYear < 0 ? abs($this->endYear) . ' BBY' : $this->endYear . ' ABY');
+    }
 }

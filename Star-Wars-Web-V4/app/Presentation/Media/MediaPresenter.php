@@ -28,6 +28,13 @@ final class MediaPresenter extends BasePresenter
 
     }
 
+    public function actionDeleteMedia(int $mediaId): void
+    {
+        $this->mediaRepository->deleteRow($mediaId);
+        $this->flashMessage('Dílo smazáno', 'success');
+        $this->redirect('Timeline:show');
+    }
+
     protected function createComponentAddForm(): Form
     {
         $form = new Form();

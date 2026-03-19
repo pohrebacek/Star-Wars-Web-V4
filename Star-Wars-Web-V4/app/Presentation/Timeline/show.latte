@@ -8,14 +8,10 @@
         <div class="imageAYear">
             <img src="{$mediaDTO->imageUrl}" class="image">
             <div>
-                {if $mediaDTO->endYear == $mediaDTO->startYear}
-                    <p class="Year">{$mediaDTO->startYear}</p>
-                {else}
-                    <p class="Year">{$mediaDTO->startYear} - {$mediaDTO->endYear}</p>
-                {/if}
+                <p class="Year">{$mediaDTO->formattedYear}</p>
                 <p class="Status">{$mediaDTO->canonStatus->value}</p>
                 <a n:href="Media:add" class="btn btn-light">Edit media</a>
-                <a n:href="Media:add" class="btn btn-light">Delete media</a>
+                <a n:href="Media:deleteMedia, mediaId => $mediaDTO->id" class="btn btn-light">Delete media</a>
             </div>
 
         </div>
