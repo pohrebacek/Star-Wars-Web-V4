@@ -123,8 +123,9 @@ body {
 }
 
 .Year {
+    font-size: clamp(1vmin, 2vw, 3vmin);
+    white-space: nowrap;
     font-weight: bold;
-    font-size: 3vmin;
     margin: 2%;
     
 }
