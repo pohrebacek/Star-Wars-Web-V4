@@ -47,6 +47,20 @@ final class MediaFacade
         return $data;
     }
 
+    public function getReferenceMediaId(int $id): ?int  //vrátí dílo po kterém se vložené dílo odehrává
+    {
+        $mediasDTOs = $this->getAllMediaDTOs();
+        for ($i = 0; $i < count($mediasDTOs); $i++) {
+            if ($mediasDTOs[$i]->id == $id) {
+                if ($i == 0) {
+                    return null;
+                }
+                return $mediasDTOs[$i-1]->id;
+            }
+        }
+        return null;
+    }
+
 
     public function calculateTimelineOrder(?int $mediaId): string
     {

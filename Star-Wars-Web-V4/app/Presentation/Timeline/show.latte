@@ -10,7 +10,7 @@
             <div>
                 <p class="Year">{$mediaDTO->getFormattedYear()}</p>
                 <p class="Status">{$mediaDTO->canonStatus->value}</p>
-                <a n:href="Media:add" class="btn btn-light">Edit media</a>
+                <a n:href="Media:edit, id => $mediaDTO->id" class="btn btn-light">Edit media</a>
                 <a n:href="Media:deleteMedia, mediaId => $mediaDTO->id" class="btn btn-light">Delete media</a>
             </div>
 

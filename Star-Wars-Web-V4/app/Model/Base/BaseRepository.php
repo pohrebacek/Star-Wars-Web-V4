@@ -51,6 +51,7 @@ class BaseRepository
             return null;
         } else {
             $this->getRowById($id)->update($data);
+            return $this->getRowById($id);
         }
         return null;
     }

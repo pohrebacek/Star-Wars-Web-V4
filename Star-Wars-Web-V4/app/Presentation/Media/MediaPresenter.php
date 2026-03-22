@@ -35,6 +35,29 @@ final class MediaPresenter extends BasePresenter
         $this->redirect('Timeline:show');
     }
 
+    public function renderEdit(int $id): void
+    {
+        $media = $this->mediaFacade->getMediaDTO($id);
+
+        if (!$media) {
+            $this->error();
+        }
+
+        $this->getComponent('addForm')->setDefaults([
+            'title' => $media->title,
+            'description' => $media->description,
+            'canon_status' => $media->canonStatus,
+            'media_type' => $media->mediaType,
+            'start_year' => $media->startYear,
+            'end_year' => $media->endYear,
+            'media_id' => $this->mediaFacade->getReferenceMediaId($media->id),
+            'era_id' => $media->eraId,
+            'part_label' => $media->partLabel,
+            'release_date' => $media->releaseDate,
+            'old_image_url' => $media->imageUrl,
+        ]);
+    }
+
     protected function createComponentAddForm(): Form
     {
         $form = new Form();
@@ -80,7 +103,8 @@ final class MediaPresenter extends BasePresenter
                 $mimeType = mime_content_type($item->getValue()->getTemporaryFile());
                 return in_array($mimeType, ['image/jpeg', 'image/png', 'image/gif']);
             }, 'Soubor musí být platný obrázek (JPG/PNG/GIF).');
-        $form->addSubmit('send', 'Přidat dílo')
+        $form->addHidden('old_image_url');
+        $form->addSubmit('send', 'Potvrdit')
             ->setAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = [$this, 'addFormSucceeded'];
@@ -128,17 +152,19 @@ final class MediaPresenter extends BasePresenter
                 'part_label' => $formData['part_label'],
                 'timeline_order' => $this->mediaFacade->calculateTimelineOrder($formData['media_id']),
                 'release_date' => $formData['release_date'],
-                'image_url' => $this->getImageFromUrlForm(),
+                'image_url' => ($this->getImageFromUrlForm() == $formData['old_image_url'] || !$this->getImageFromUrlForm()) ? $formData['old_image_url'] : $this->getImageFromUrlForm(),
                 'status' => MediaStatus::PLANNED->value
             ]);
+
             bdump($data);
 
-            $media = $this->mediaRepository->saveRow((array) $data, null);
+
+            $media = $this->getParameter('id') ? $this->mediaRepository->saveRow((array) $data, $this->getParameter('id')) : $this->mediaRepository->saveRow((array) $data, null);
             if ($media) {
-                $this->flashMessage('Dílo bylo úspěšně přidáno', 'success');
+                $this->flashMessage('Akce proběhla úspěšně', 'success');
                 $this->redirect('Timeline:show');
             }
-            $this->flashMessage('Dílo se nepovedlo přidat', 'danger');
+            $this->flashMessage('Něco se pokazilo', 'danger');
             $this->redirect('Timeline:show');
         } catch (Nette\Database\DriverException $e) {
             $this->flashMessage('Použij normální znaky', 'danger');
