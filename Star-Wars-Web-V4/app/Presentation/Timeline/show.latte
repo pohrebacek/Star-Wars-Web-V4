@@ -23,7 +23,13 @@
                 <a n:href="Media:edit, id => $mediaDTO->id" class="btn btn-light">Edit media</a>
                 <a n:href="Media:deleteMedia, mediaId => $mediaDTO->id" class="btn btn-light">Delete media</a>
                 Mark as:
-                <select></select>
+                <select>
+                    {foreach $statusArray as $statusValue => $statusLabel}
+                        <option value="{$statusValue}">
+                            {$statusLabel}
+                        </option>
+                    {/foreach}
+                </select>
             </div>
         </div>
     </div>
